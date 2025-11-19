@@ -17,6 +17,11 @@ namespace BoardFunctions {
     // Prints the board
     void printBoard(const Board& board);
 
+    // Returns if a move is legal or not
+    // start is the square of piece to move
+    // end is the square where the piece will move
+    bool isLegalMove(const Board& board, int start, int end);
+
     // Makes a move
     void makeMove(Board& board, int start, int end);
 
