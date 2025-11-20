@@ -31,17 +31,17 @@ namespace HelperFunctions {
     // can make, flag governs whether to keep checking for squares
     // piece_color is piece's color, and xy are the coordinates of the
     // target square
-    bool canMove(const Board &board, vector<int> &moves, const bool flag,
-                        const bool piece_color, const int x, const int y) {
-        const int index = y * 8 + x;
+    bool canMove(const Board &board, Moves &moves, const bool flag,
+                        const bool piece_color, const int index, const int x, const int y) {
+        const int target_index = y * 8 + x;
 
         if (!flag && isInBounds(x, y)) {
-            if (board[index] == '0') {
-                moves.push_back(index);
+            if (board[target_index] == '0') {
+                moves.emplace_back(index, target_index);
                 return false;
             }
-            if (getColor(board[index]) != piece_color) {
-                moves.push_back(index);
+            if (getColor(board[target_index]) != piece_color) {
+                moves.emplace_back(index, target_index);
                 return true;
             }
             return true;
@@ -51,8 +51,7 @@ namespace HelperFunctions {
 
     // Returns all available squares in the straight directions
     // Used for rook and queen movement
-    vector<int> getStraightMoves(const Board& board, const int index) {
-        vector<int> moves;
+    void getStraightMoves(const Board &board, Moves &moves, const int index) {
 
         bool upFlag = false;
         bool downFlag = false;
@@ -65,18 +64,16 @@ namespace HelperFunctions {
         const bool piece_color = getColor(board[index]);
 
         for (int i = 1; i < 8; i++) {
-            upFlag = canMove(board, moves, upFlag, piece_color, x, y + i);
-            downFlag = canMove(board, moves, downFlag, piece_color, x, y - i);
-            leftFlag = canMove(board, moves, leftFlag, piece_color, x - i, y);
-            rightFlag = canMove(board, moves, rightFlag, piece_color, x + i, y);
+            upFlag = canMove(board, moves, upFlag, piece_color, index, x, y + i);
+            downFlag = canMove(board, moves, downFlag, piece_color, index, x, y - i);
+            leftFlag = canMove(board, moves, leftFlag, piece_color, index, x - i, y);
+            rightFlag = canMove(board, moves, rightFlag, piece_color, index, x + i, y);
         }
-        return moves;
     }
 
     // Returns all available squares in the diagonal directions
     // Used for bishop and queen movement
-    vector<int> getDiagonalMoves(const Board& board, const int index) {
-        vector<int> moves;
+    void getDiagonalMoves(const Board &board, Moves &moves, const int index) {
 
         bool urFlag = false;
         bool ulFlag = false;
@@ -89,36 +86,32 @@ namespace HelperFunctions {
         const bool piece_color = getColor(board[index]);
 
         for (int i = 1; i < 8; i++) {
-            urFlag = canMove(board, moves, urFlag, piece_color, x + i, y + i);
-            ulFlag = canMove(board, moves, ulFlag, piece_color, x - i, y + i);
-            drFlag = canMove(board, moves, drFlag, piece_color, x + i, y - i);
-            dlFlag = canMove(board, moves, dlFlag, piece_color, x - i, y - i);
+            urFlag = canMove(board, moves, urFlag, piece_color, index, x + i, y + i);
+            ulFlag = canMove(board, moves, ulFlag, piece_color, index, x - i, y + i);
+            drFlag = canMove(board, moves, drFlag, piece_color, index, x + i, y - i);
+            dlFlag = canMove(board, moves, dlFlag, piece_color, index, x - i, y - i);
         }
-        return moves;
     }
 
     // Returns all available squares in the knight's directions
-    vector<int> getKnightMoves(const Board& board, const int index) {
-        vector<int> moves;
+    void getKnightMoves(const Board& board, Moves &moves, const int index) {
 
         const int x = index % 8;
         const int y = index / 8;
 
         const bool piece_color = getColor(board[index]);
 
-        canMove(board, moves, false, piece_color, x + 1, y + 2);
-        canMove(board, moves, false, piece_color, x - 1, y + 2);
+        canMove(board, moves, false, piece_color, index, x + 1, y + 2);
+        canMove(board, moves, false, piece_color, index, x - 1, y + 2);
 
-        canMove(board, moves, false, piece_color, x + 2, y + 1);
-        canMove(board, moves, false, piece_color, x - 2, y + 1);
+        canMove(board, moves, false, piece_color, index, x + 2, y + 1);
+        canMove(board, moves, false, piece_color, index, x - 2, y + 1);
 
-        canMove(board, moves, false, piece_color, x + 2, y - 1);
-        canMove(board, moves, false, piece_color, x - 2, y - 1);
+        canMove(board, moves, false, piece_color, index, x + 2, y - 1);
+        canMove(board, moves, false, piece_color, index, x - 2, y - 1);
 
-        canMove(board, moves, false, piece_color, x + 1, y - 2);
-        canMove(board, moves, false, piece_color, x - 1, y - 2);
-
-        return moves;
+        canMove(board, moves, false, piece_color, index, x + 1, y - 2);
+        canMove(board, moves, false, piece_color, index, x - 1, y - 2);
     }
 
     /*

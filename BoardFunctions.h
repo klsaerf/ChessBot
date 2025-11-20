@@ -10,6 +10,7 @@
 
 using namespace std;
 using Board = vector<char>;
+using Moves = vector<pair<int, int>>;
 
 
 // Namespace that holds functions that manipulate game board
