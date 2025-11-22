@@ -121,12 +121,13 @@ namespace HelperFunctions {
 
         const Color piece_color = getColor(board[index]);
         const Color opponent_color = piece_color == WHITE ? BLACK : WHITE;
+
         const int direction = piece_color == WHITE ? 1 : -1;
 
         // Check pawn movement without canMove as pawn is special
         // in the sense that if it can move it cannot capture
         // but if it can capture it cannot move to that square
-        if (isInBounds(index + 8 * direction) && board[index + 8 * direction] == '0') {
+        if (isInBounds(x, y + direction) && board[index + 8 * direction] == '0') {
             moves.emplace_back(index, index + 8 * direction);
         }
 
@@ -136,12 +137,12 @@ namespace HelperFunctions {
             }
         }
 
-        if (isInBounds(x + 1, y + direction) && getColor(board[index + 9 * direction]) == opponent_color) {
-            moves.emplace_back(index, index + 9 * direction);
+        if (isInBounds(x + 1, y + direction) && getColor(board[index + 1 + 8 * direction]) == opponent_color) {
+            moves.emplace_back(index, index + 1 + 8 * direction);
         }
 
-        if (isInBounds(x - 1, y + direction) && getColor(board[index + 7 * direction]) == opponent_color) {
-            moves.emplace_back(index, index + 7 * direction);
+        if (isInBounds(x - 1, y + direction) && getColor(board[index - 1 + 8 * direction]) == opponent_color) {
+            moves.emplace_back(index, index - 1 + 8 * direction);
         }
     }
 
@@ -194,6 +195,16 @@ namespace HelperFunctions {
         }
     }
 
+    void attemptPromotion(Board& board, const int start, const int end) {
+        const int y = end / 8;
+
+        const Color piece_color = getColor(board[start]);
+
+        if ((piece_color == WHITE && y == 7) || (piece_color == BLACK && y == 0)) {
+            board[start] = piece_color == WHITE ? 'q' : 'Q';
+        }
+    }
+
 }
 
 using namespace HelperFunctions;
@@ -224,7 +235,8 @@ namespace BoardFunctions {
         return foundMove != availableMoves.end();
     }
 
-    void makeMove(Board &board, int start, int end) {
+    void makeMove(Board &board, const int start, const int end) {
+        if (tolower(board[start]) == 'p') attemptPromotion(board, start, end);
         board[end] = board[start];
         board[start] = '0';
     }
