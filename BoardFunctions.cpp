@@ -200,40 +200,28 @@ using namespace HelperFunctions;
 
 namespace BoardFunctions {
     void printBoard(const Board &board) {
-        for (int i = 0; i < 64; i++) {
-            cout << board[i] << " ";
-            if (i % 8 == 7) cout << endl;
+        for (int i = 7; i >= 0; i--) {
+            for (int j = 0; j < 8; j++) {
+                cout << board[i * 8 + j] << " ";
+            }
+            cout << endl;
         }
     }
 
-    bool isLegalMove(const Board& board, const int start, const int end) {
-        // bounds check and if start is the same as end check
-        if (!isInBounds(start) || !isInBounds(end) || start == end) {
-            return false;
-        }
+    bool isLegalMove(const Board& board, const int start, const int end, const Color turn) {
+        // It's not the player's color
+        if (getColor(board[start]) != turn) return false;
 
-        // cannot move empty piece
-        if (board[start] == '0') {
-            return false;
-        }
-
-        // cannot take your own piece but white
-        if (islower(board[start]) && islower(board[end])) {
-            return false;
-        }
-        // cannot take your own piece but black
-        if (isupper(board[start]) && isupper(board[end])) {
-            return false;
-        }
-
-        /*
-        // Check if the piece can actually move to the target square
-        vector<int> availableMoves = getAvailableMoves(board, start);
-        const auto foundMove = find(availableMoves.begin(), availableMoves.end(), end);
+        // Check if the piece can move to the target square
+        // All the necessary checks are handled in canMove
+        // inside the getAvailableMoves
+        Moves availableMoves;
+        getAvailableMoves(board, availableMoves, start);
+        const auto foundMove =
+            find(availableMoves.begin(),
+            availableMoves.end(),
+            pair(start, end));
         return foundMove != availableMoves.end();
-        */
-
-        return true;
     }
 
     void makeMove(Board &board, int start, int end) {
