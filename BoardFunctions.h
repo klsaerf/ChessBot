@@ -12,6 +12,8 @@ using namespace std;
 using Board = vector<char>;
 using Moves = vector<pair<int, int>>;
 
+enum Color {WHITE, BLACK, EMPTY};
+
 
 // Namespace that holds functions that manipulate game board
 namespace BoardFunctions {

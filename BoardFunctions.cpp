@@ -8,9 +8,9 @@
 
 namespace HelperFunctions {
     // Returns color of piece
-    // true for white, false for black
-    bool getColor(const char piece) {
-        return islower(piece) ? true : false;
+    Color getColor(const char piece) {
+        if (piece == '0') return EMPTY;
+        return islower(piece) ? WHITE : BLACK;
     }
 
     // Checks if given index is in bounds
@@ -32,7 +32,7 @@ namespace HelperFunctions {
     // piece_color is piece's color, and xy are the coordinates of the
     // target square
     bool canMove(const Board &board, Moves &moves, const bool flag,
-                        const bool piece_color, const int index, const int x, const int y) {
+                        const Color piece_color, const int index, const int x, const int y) {
         const int target_index = y * 8 + x;
 
         if (!flag && isInBounds(x, y)) {
@@ -61,7 +61,7 @@ namespace HelperFunctions {
         const int x = index % 8;
         const int y = index / 8;
 
-        const bool piece_color = getColor(board[index]);
+        const Color piece_color = getColor(board[index]);
 
         for (int i = 1; i < 8; i++) {
             upFlag = canMove(board, moves, upFlag, piece_color, index, x, y + i);
@@ -83,7 +83,7 @@ namespace HelperFunctions {
         const int x = index % 8;
         const int y = index / 8;
 
-        const bool piece_color = getColor(board[index]);
+        const Color piece_color = getColor(board[index]);
 
         for (int i = 1; i < 8; i++) {
             urFlag = canMove(board, moves, urFlag, piece_color, index, x + i, y + i);
@@ -94,12 +94,12 @@ namespace HelperFunctions {
     }
 
     // Returns all available squares in the knight's directions
-    void getKnightMoves(const Board& board, Moves &moves, const int index) {
+    void getKnightMoves(const Board &board, Moves &moves, const int index) {
 
         const int x = index % 8;
         const int y = index / 8;
 
-        const bool piece_color = getColor(board[index]);
+        const Color piece_color = getColor(board[index]);
 
         canMove(board, moves, false, piece_color, index, x + 1, y + 2);
         canMove(board, moves, false, piece_color, index, x - 1, y + 2);
@@ -114,16 +114,86 @@ namespace HelperFunctions {
         canMove(board, moves, false, piece_color, index, x - 1, y - 2);
     }
 
-    /*
-    // Returns the available moves for a given piece
-    // board is gameboard, index is piece's square
-    vector<int> getAvailableMoves(const Board& board, const int index) {
-        vector<int> moves;
-        switch (board[index]) {
+    // Returns all available moves a pawn can make
+    void getPawnMoves(const Board &board, Moves &moves, const int index) {
+        const int x = index % 8;
+        const int y = index / 8;
 
+        const Color piece_color = getColor(board[index]);
+        const Color opponent_color = piece_color == WHITE ? BLACK : WHITE;
+        const int direction = piece_color == WHITE ? 1 : -1;
+
+        // Check pawn movement without canMove as pawn is special
+        // in the sense that if it can move it cannot capture
+        // but if it can capture it cannot move to that square
+        if (isInBounds(index + 8 * direction) && board[index + 8 * direction] == '0') {
+            moves.emplace_back(index, index + 8 * direction);
+        }
+
+        if ((piece_color == WHITE && y == 1) || (piece_color == BLACK && y == 6)) {
+            if (isInBounds(index + 16 * direction) && board[index + 16 * direction] == '0') {
+                moves.emplace_back(index, index + 16 * direction);
+            }
+        }
+
+        if (isInBounds(x + 1, y + direction) && getColor(board[index + 9 * direction]) == opponent_color) {
+            moves.emplace_back(index, index + 9 * direction);
+        }
+
+        if (isInBounds(x - 1, y + direction) && getColor(board[index + 7 * direction]) == opponent_color) {
+            moves.emplace_back(index, index + 7 * direction);
         }
     }
-    */
+
+    // Returns all available moves for the king
+    void getKingMoves(const Board &board, Moves &moves, const int index) {
+        const int x = index % 8;
+        const int y = index / 8;
+
+        const Color piece_color = getColor(board[index]);
+
+        for (int i = 0; i < 9; i++) {
+            // King's own square
+            // canMove function will fail even if this
+            // check isn't inplace, but saves computation
+            if (i == 4) continue;
+
+            const int x_offset = i % 3 - 1;
+            const int y_offset = i / 3 - 1;
+            canMove(board, moves, false, piece_color, index, x + x_offset, y + y_offset);
+        }
+    }
+
+
+    // Returns the available moves for a given piece
+    // board is gameboard, moves is move vector to modify,
+    // index is piece's square
+    void getAvailableMoves(const Board& board, Moves& moves, const int index) {
+        switch (tolower(board[index])) {
+            case 'r':
+                getStraightMoves(board, moves, index);
+                break;
+            case 'n':
+                getKnightMoves(board, moves, index);
+                break;
+            case 'b':
+                getDiagonalMoves(board, moves, index);
+                break;
+            case 'q':
+                getStraightMoves(board, moves, index);
+                getDiagonalMoves(board, moves, index);
+                break;
+            case 'k':
+                getKingMoves(board, moves, index);
+                break;
+            case 'p':
+                getPawnMoves(board, moves, index);
+                break;
+            default:
+                break;
+        }
+    }
+
 }
 
 using namespace HelperFunctions;
