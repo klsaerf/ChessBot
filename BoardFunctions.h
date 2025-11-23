@@ -20,6 +20,10 @@ namespace BoardFunctions {
     // Prints the board
     void printBoard(const Board& board);
 
+    // Returns the winner color if the game is over
+    // Game is over when opponent king is captured
+    Color isGameOver(const Board& board);
+
     // Returns if a move is legal or not
     // start is the square of piece to move
     // end is the square where the piece will move

@@ -195,6 +195,9 @@ namespace HelperFunctions {
         }
     }
 
+    // Attempts a promotion
+    // Function is called from makeMove which has
+    // the pawn check already
     void attemptPromotion(Board& board, const int start, const int end) {
         const int y = end / 8;
 
@@ -218,6 +221,26 @@ namespace BoardFunctions {
             cout << endl;
         }
     }
+
+    Color isGameOver(const Board& board) {
+        // White king captured -> black win
+        const auto foundWhiteKing =
+            find(board.begin(),
+            board.end(),
+            'k');
+        if (foundWhiteKing == board.end()) return BLACK;
+
+        // Black king captured -> white win
+        const auto foundBlackKing =
+            find(board.begin(),
+            board.end(),
+            'K');
+        if (foundBlackKing == board.end()) return WHITE;
+
+        // Game still ongoing
+        return EMPTY;
+    }
+
 
     bool isLegalMove(const Board& board, const int start, const int end, const Color turn) {
         // It's not the player's color
@@ -245,47 +268,47 @@ namespace BoardFunctions {
         for (int i = 0; i < 64; i++) {
             // White pieces
             if (i == 0 || i == 7) {
-                board[i] = 'r';
+                board.emplace_back('r');
             }
             else if (i == 1 || i == 6) {
-                board[i] = 'n';
+                board.emplace_back('n');
             }
             else if (i == 2 || i == 5) {
-                board[i] = 'b';
+                board.emplace_back('b');
             }
             else if (i == 3) {
-                board[i] = 'q';
+                board.emplace_back('q');
             }
             else if (i == 4) {
-                board[i] = 'k';
+                board.emplace_back('k');
             }
             else if (i >= 8 && i <= 15) {
-                board[i] = 'p';
+                board.emplace_back('p');
             }
 
             // Black pieces
             else if (i >= 48 && i <= 55) {
-                board[i] = 'P';
+                board.emplace_back('P');
             }
             else if (i == 56 || i == 63) {
-                board[i] = 'R';
+                board.emplace_back('R');
             }
             else if (i == 57 || i == 62) {
-                board[i] = 'N';
+                board.emplace_back('N');
             }
             else if (i == 58 || i == 61) {
-                board[i] = 'B';
+                board.emplace_back('B');
             }
             else if (i == 59) {
-                board[i] = 'Q';
+                board.emplace_back('Q');
             }
             else if (i == 60) {
-                board[i] = 'K';
+                board.emplace_back('K');
             }
 
             // Empty squares
             else {
-                board[i] = '0';
+                board.emplace_back('0');
             }
         }
     }

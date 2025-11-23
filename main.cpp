@@ -21,6 +21,12 @@ int main() {
     string input;
     while (true) {
         printBoard(board);
+        const Color gameStatus = isGameOver(board);
+        if (gameStatus != EMPTY) {
+            cout << (gameStatus == WHITE ? "White" : "Black")  << " won!" << endl;
+            break;
+        }
+
         cout << "It's " << (turn == WHITE ? "white" : "black")  << "'s turn now." << endl;
         cout << "Enter the coordinates of your move (q for exit): ";
         getline(cin, input);
