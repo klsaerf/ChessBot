@@ -3,7 +3,7 @@
  * Date  : 18.11.2025
  */
 
-#include "BoardFunctions.h"
+#include "boardFunctions.h"
 #include <iostream>
 
 namespace HelperFunctions {
@@ -263,6 +263,16 @@ namespace BoardFunctions {
         board[end] = board[start];
         board[start] = '0';
     }
+
+    void getAllAvailableMoves(const Board& board, Moves& moves, const Color turn) {
+        for (int i = 0; i < 64; i++) {
+            const char piece = board[i];
+            if (piece == '0') continue;
+
+            if (turn == getColor(piece)) getAvailableMoves(board, moves, i);
+        }
+    }
+
 
     void populateBoard(Board &board) {
         for (int i = 0; i < 64; i++) {

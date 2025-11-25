@@ -10,7 +10,8 @@
 
 using namespace std;
 using Board = vector<char>;
-using Moves = vector<pair<int, int>>;
+using Move = pair<int, int>;
+using Moves = vector<Move>;
 
 enum Color {WHITE, BLACK, EMPTY};
 
@@ -31,6 +32,8 @@ namespace BoardFunctions {
 
     // Makes a move
     void makeMove(Board& board, int start, int end);
+
+    void getAllAvailableMoves(const Board& board, Moves& moves, Color turn);
 
     // Populates the board
     // Lowercase characters represent white,

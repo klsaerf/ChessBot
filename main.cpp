@@ -4,22 +4,28 @@
  */
 
 #include <iostream>
-#include "BoardFunctions.h"
+#include "boardFunctions.h"
+#include "chessBot.h"
+#include <chrono>
 
 
 using namespace std;
 using namespace BoardFunctions;
+using namespace std::chrono;
 
 int main() {
     Board board;
     board.reserve(64);
+    populateBoard(board);
 
     Color turn = WHITE;
 
-    populateBoard(board);
+    ChessBot chessBot;
 
     string input;
     while (true) {
+
+
         printBoard(board);
         const Color gameStatus = isGameOver(board);
         if (gameStatus != EMPTY) {
@@ -40,11 +46,22 @@ int main() {
         if (isLegalMove(board, start, end, turn)) {
             makeMove(board, start, end);
             turn = turn == WHITE ? BLACK : WHITE;
+        } else {
+            cout << "Illegal move" << endl;
+            continue;
         }
 
-        else cout << "Illegal move" << endl;
+        auto s = high_resolution_clock::now();
+        auto move = chessBot.minimax(board, 5, turn);
+        auto duration = duration_cast<milliseconds>(high_resolution_clock::now() - s);
+        cout << duration.count() << " ms to think" << endl;
+
+        makeMove(board, move.second.first, move.second.second);
+        turn = turn == WHITE ? BLACK : WHITE;
+
         cout << endl << endl;
     }
+
 
     return 0;
 }
