@@ -16,10 +16,12 @@ public:
 
     int evaluate(const Board &board) const;
 
+    int movesMade();
+
     pair<int, Move> minimax(Board board, int depth, Color turn);
 private:
-    vector<int> squareWeights;
-
+    vector<int> squareWeights_;
+    int moveCounter_;
 };
 
 

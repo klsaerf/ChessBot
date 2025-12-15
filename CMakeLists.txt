@@ -8,3 +8,6 @@ add_executable(Chess main.cpp
         boardFunctions.h
         chessBot.cpp
         chessBot.h)
+
+find_package(OpenMP REQUIRED)
+target_link_libraries(Chess OpenMP::OpenMP_CXX)

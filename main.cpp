@@ -24,9 +24,9 @@ int main() {
 
     string input;
     while (true) {
-
-
         printBoard(board);
+        cout << chessBot.evaluate(board) << " current board eval" << endl;
+
         const Color gameStatus = isGameOver(board);
         if (gameStatus != EMPTY) {
             cout << (gameStatus == WHITE ? "White" : "Black")  << " won!" << endl;
@@ -52,9 +52,10 @@ int main() {
         }
 
         auto s = high_resolution_clock::now();
-        auto move = chessBot.minimax(board, 5, turn);
+        auto move = chessBot.minimax(board, 4, turn);
         auto duration = duration_cast<milliseconds>(high_resolution_clock::now() - s);
         cout << duration.count() << " ms to think" << endl;
+        cout << chessBot.movesMade() << " moves analysed" << endl;
 
         makeMove(board, move.second.first, move.second.second);
         turn = turn == WHITE ? BLACK : WHITE;

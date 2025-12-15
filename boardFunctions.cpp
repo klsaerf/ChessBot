@@ -132,7 +132,7 @@ namespace HelperFunctions {
         }
 
         if ((piece_color == WHITE && y == 1) || (piece_color == BLACK && y == 6)) {
-            if (isInBounds(index + 16 * direction) && board[index + 16 * direction] == '0') {
+            if (isInBounds(index + 16 * direction) && board[index + 8 * direction] == '0' && board[index + 16 * direction] == '0') {
                 moves.emplace_back(index, index + 16 * direction);
             }
         }

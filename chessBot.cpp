@@ -18,29 +18,30 @@ Board makeMove_(Board board, const int start, const int end) {
 
 
 ChessBot::ChessBot() {
+    moveCounter_ = 0;
     for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
             if (i == 0 || j == 0 || i == 7 || j == 7) {
-                squareWeights.push_back(1);
+                squareWeights_.push_back(1);
                 continue;
             }
             if (i == 1 || j == 1 || i == 6 || j == 6) {
-                squareWeights.push_back(2);
+                squareWeights_.push_back(2);
                 continue;
             }
             if (i == 2 || j == 2 || i == 5 || j == 5) {
-                squareWeights.push_back(3);
+                squareWeights_.push_back(3);
                 continue;
             }
             if (i == 3 || j == 3 || i == 4 || j == 4) {
-                squareWeights.push_back(4);
-                continue;
+                squareWeights_.push_back(4);
             }
         }
     }
 }
 
 int ChessBot::evaluate(const Board &board) const {
+    // TODO: add different weights for different pieces
     const Color game_state = isGameOver(board);
     if (game_state != EMPTY) return game_state == WHITE ? 10000 : -10000;
 
@@ -66,48 +67,69 @@ int ChessBot::evaluate(const Board &board) const {
                 piece_value = 150;
                 break;
             case 'p':
-                piece_value = 20;
+                piece_value = 10;
                 break;
             default:
                 break;
         }
-        evaluation += piece_color == WHITE ? piece_value + squareWeights[i] : -1 * (piece_value + squareWeights[i]);
+        evaluation += piece_color == WHITE ? piece_value + squareWeights_[i] : -1 * (piece_value + squareWeights_[i]);
     }
 
     return evaluation;
 }
 
-pair<int, Move> ChessBot::minimax(Board board, int depth, const Color turn) {
+int ChessBot::movesMade() {
+    const int temp = moveCounter_;
+    moveCounter_ = 0;
+    return temp;
+}
+
+pair<int, Move> ChessBot::minimax(Board board, const int depth, const Color turn) {
+    #pragma omp critical
+    {
+        moveCounter_++;
+    }
     if (isGameOver(board) != EMPTY || depth == 0) {
         return {evaluate(board), {0, 0}};
     }
 
     pair<int, Move> best;
+    Moves availableMoves;
+
+    getAllAvailableMoves(board, availableMoves, turn);
 
     if (turn == WHITE) {
         best = {-10000, {0, 0}};
-        Moves availableMoves;
 
-        getAllAvailableMoves(board, availableMoves, turn);
-        for (auto move: availableMoves) {
-            Board newBoard = makeMove_(board, move.first, move.second);
-            pair<int, Move> newBest = {minimax(newBoard, depth-1, BLACK).first, move};
-            if (newBest.first > best.first) {
-                best = newBest;
+        int i;
+        #pragma omp parallel for
+        for (i = 0; i < availableMoves.size(); i++) {
+            const Move move = availableMoves[i];
+            const Board newBoard = makeMove_(board, move.first, move.second);
+            const pair<int, Move> newBest = {minimax(newBoard, depth-1, BLACK).first, move};
+            #pragma omp critical
+            {
+                if (newBest.first > best.first) {
+                    best = newBest;
+                }
             }
         }
     }
 
     if (turn == BLACK) {
         best = {10000, {0, 0}};
-        Moves availableMoves;
 
-        getAllAvailableMoves(board, availableMoves, turn);
-        for (auto move: availableMoves) {
-            Board newBoard = makeMove_(board, move.first, move.second);
-            pair<int, Move> newBest = {minimax(newBoard, depth-1, WHITE).first, move};
-            if (newBest.first < best.first) {
-                best = newBest;
+        int i;
+        #pragma omp parallel for
+        for (i = 0; i < availableMoves.size(); i++) {
+            const Move move = availableMoves[i];
+            const Board newBoard = makeMove_(board, move.first, move.second);
+            const pair<int, Move> newBest = {minimax(newBoard, depth-1, WHITE).first, move};
+            #pragma omp critical
+            {
+                if (newBest.first < best.first) {
+                    best = newBest;
+                }
             }
         }
     }
