@@ -215,11 +215,17 @@ using namespace HelperFunctions;
 namespace BoardFunctions {
     void printBoard(const Board &board) {
         for (int i = 7; i >= 0; i--) {
+            cout << i + 1 << "  ";
             for (int j = 0; j < 8; j++) {
                 cout << board[i * 8 + j] << " ";
             }
             cout << endl;
         }
+        cout << "   ";
+        for (char rank = 'a'; rank <= 'h'; rank++) {
+            cout << rank <<  " ";
+        }
+        cout << endl << endl;
     }
 
     Color isGameOver(const Board& board) {
@@ -321,5 +327,22 @@ namespace BoardFunctions {
                 board.emplace_back('0');
             }
         }
+    }
+
+    string convertIndexToNotation(const int index) {
+        // converting the index into notation chars
+        char rank = (index % 8) + 'a';
+        char row = (index / 8) + '1';
+        return {rank, row};
+    }
+
+    int convertNotationToIndex(const string& notation) {
+        if (notation[0] < 'a' || notation[0] > 'h') return -1;
+        if (notation[1] < '1' || notation[1] > '8') return -1;
+
+        // converting the char into correct indexing
+        int rank = notation[0] - 'a';
+        int row = notation[1] - '1';
+        return row * 8 + rank;
     }
 }

@@ -15,6 +15,8 @@ using Moves = vector<Move>;
 
 enum Color {WHITE, BLACK, EMPTY};
 
+const Move NO_MOVE = {-1, -1};
+
 
 // Namespace that holds functions that manipulate game board
 namespace BoardFunctions {
@@ -33,6 +35,7 @@ namespace BoardFunctions {
     // Makes a move
     void makeMove(Board& board, int start, int end);
 
+    // Returns all available moves of the colors turn
     void getAllAvailableMoves(const Board& board, Moves& moves, Color turn);
 
     // Populates the board
@@ -42,6 +45,14 @@ namespace BoardFunctions {
     // r -> rook  | n -> knight | b -> bishop
     // q -> queen | k -> king   | p -> pawn
     void populateBoard(Board& board);
+
+    // Converts a given index to chess notation
+    // Example -> 0 = a1, 12 = e2
+    string convertIndexToNotation(int index);
+
+    // Converts a given notation to index
+    // Example -> a1 = 0, e2 = 12
+    int convertNotationToIndex(const string& notation);
 }
 
 
