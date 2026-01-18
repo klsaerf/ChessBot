@@ -5,6 +5,7 @@
 
 #include "boardFunctions.h"
 #include <iostream>
+#include <algorithm>
 
 namespace HelperFunctions {
     // Returns color of piece

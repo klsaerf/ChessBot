@@ -4,13 +4,29 @@
  */
 
 #include "chessBot.h"
+
+#include <algorithm>
 #include <iostream>
 
 using namespace BoardFunctions;
 
+Color getColor(const char piece) {
+    if (piece == '0') return EMPTY;
+    return islower(piece) ? WHITE : BLACK;
+}
+
+void attemptPromotion(Board& board, const int start, const int end) {
+    const int y = end / 8;
+
+    const Color piece_color = getColor(board[start]);
+
+    if ((piece_color == WHITE && y == 7) || (piece_color == BLACK && y == 0)) {
+        board[start] = piece_color == WHITE ? 'q' : 'Q';
+    }
+}
 
 Board makeMove_(Board board, const int start, const int end) {
-    //if (tolower(board[start]) == 'p') attemptPromotion(board, start, end);
+    if (tolower(board[start]) == 'p') attemptPromotion(board, start, end);
     board[end] = board[start];
     board[start] = '0';
     return board;

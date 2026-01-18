@@ -7,6 +7,7 @@
 #define CHESS_BOARDFUNCTIONS_H
 
 #include <vector>
+#include <string>
 
 using namespace std;
 using Board = vector<char>;
